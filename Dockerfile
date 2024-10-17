@@ -65,6 +65,9 @@ WORKDIR /var/www/html/mhbc
 
 RUN composer install
 
+RUN composer require --dev symfony/maker-bundle
+RUN chmod +x bin/console
+RUN chmod -R 775 var/
 # Clean up Composer
 #RUN rm -f /usr/local/bin/composer
 
