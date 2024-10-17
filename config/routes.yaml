@@ -22,4 +22,4 @@ login:
 
 register:
     path: /register
-    controller: App\Controller\SecurityController::register
+    controller: App\Controller\RegistrationController::register
