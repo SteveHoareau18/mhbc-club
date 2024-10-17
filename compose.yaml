@@ -82,6 +82,8 @@ services:
     dns:
       - 1.1.1.1
       - 1.0.0.1
+    volumes:
+      - /Users/blackoldeagle/PhpstormProjects/mhbc-club:/var/www/html/mhbc
   database:
     image: postgres:${POSTGRES_VERSION:-16}-alpine
     environment:
