@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Inscription à l'événement{% endblock %}
+
+{% block body %}
+    <h1>Inscription à l'événement {{ event.name }}</h1>
+
+    <p>Lieu : {{ event.place }}</p>
+    <p>Date : {{ event.date|date('d/m/Y') }}</p>
+    <p>Places disponibles : {{ event.limitedSpace }}</p>
+
+    <form method="post">
+        <div>
+            <label for="participants">Nombre de participants :</label>
+            <input type="number" id="participants" name="participants" min="1" max="{{ event.limitedSpace }}" required>
+        </div>
+
+        <button type="submit">S'inscrire</button>
+    </form>
+{% endblock %}

@@ -1,0 +1,12 @@
+# public/.htaccess
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Si le fichier ou le dossier existe, ne fait rien (évite la redirection)
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+
+    # Redirige tout vers index.php
+    RewriteRule ^ index.php [QSA,L]
+</IfModule>

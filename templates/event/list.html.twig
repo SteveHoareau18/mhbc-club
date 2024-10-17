@@ -1,0 +1,43 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des événements{% endblock %}
+
+{% block body %}
+    <h1>Liste des événements</h1>
+
+    <!-- Bouton pour ajouter un nouvel événement -->
+    <a href="{{ path('event_create') }}" class="btn btn-primary">Ajouter un événement</a>
+
+    <table>
+        <thead>
+        <tr>
+            <th>Nom</th>
+            <th>Description</th>
+            <th>Date</th>
+            <th>Lieu</th>
+            <th>Type</th>
+            <th>Places disponibles</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for event in events %}
+            <tr>
+                <td>{{ event.name }}</td>
+                <td>{{ event.description }}</td>
+                <td>{{ event.date|date('d/m/Y') }}</td>
+                <td>{{ event.place }}</td>
+                <td>{{ event.type }}</td>
+                <td>{{ event.limitedSpace }}</td>
+                <td>
+                    {% if event.limitedSpace > 0 %}
+                        <a href="{{ path('event_register', {'id': event.id}) }}">S'inscrire</a>
+                    {% else %}
+                        <span style="color: red;">Complet</span>
+                    {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
