@@ -25,7 +25,6 @@ class EventController extends AbstractController
     #[Route('/event/register/{id}', name: 'event_register', methods: ['GET', 'POST'])]
     public function register(Event $event, Request $request, EntityManagerInterface $entityManager): Response
     {
-        // Si l'événement est complet, rediriger avec un message d'erreur
         if ($event->getLimitedSpace() <= 0) {
             $this->addFlash('error', 'Cet événement est complet.');
             return $this->redirectToRoute('event_list');
@@ -34,7 +33,6 @@ class EventController extends AbstractController
         if ($request->isMethod('POST')) {
             $participants = $request->request->get('participants');
 
-            // Vérification du nombre de places disponibles
             if ($event->getLimitedSpace() >= $participants) {
                 $event->setLimitedSpace($event->getLimitedSpace() - $participants);
 
@@ -57,7 +55,6 @@ class EventController extends AbstractController
     #[Route('/event/add', name: 'add_event')]
     public function addEvent(EntityManagerInterface $entityManager): Response
     {
-        // Création d'un nouvel événement pour tester
         $event = new Event();
         $event->setName('Tournoi de Handball');
         $event->setDescription('Un tournoi pour tester l\'ajout d\'événements.');
@@ -66,7 +63,6 @@ class EventController extends AbstractController
         $event->setType('Tournoi');
         $event->setLimitedSpace(50);
 
-        // Sauvegarde dans la base de données
         $entityManager->persist($event);
         $entityManager->flush();
 
@@ -77,21 +73,16 @@ class EventController extends AbstractController
     {
         $event = new Event();
 
-        // Créer le formulaire à partir de la classe de formulaire EventType
         $form = $this->createForm(EventType::class, $event);
 
-        // Gestion de la soumission du formulaire
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            // Enregistrer le nouvel événement dans la base de données
             $entityManager->persist($event);
             $entityManager->flush();
 
-            // Rediriger vers la liste des événements après création
             return $this->redirectToRoute('event_list');
         }
 
-        // Rendre la vue du formulaire de création
         return $this->render('event/create.html.twig', [
             'form' => $form->createView(),
         ]);
