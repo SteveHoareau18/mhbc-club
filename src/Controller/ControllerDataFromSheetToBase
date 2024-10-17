@@ -1,0 +1,21 @@
+<?php
+namespace App\Controller;
+
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+
+class ControllerDataFromSheetToBase extends AbstractController
+{
+    #[Route('/store-data', name: 'app_store_data')]
+    public function storeData(GoogleSheetsService $googleSheetsService, DataStorageService $dataStorageService)
+    {
+        $spreadsheetId = 'YOUR_SPREADSHEET_ID';
+        $range = 'YOUR_SHEET_RANGE';
+
+        $data = $googleSheetsService->getSheetData($spreadsheetId, $range);
+        $dataStorageService->storeData($data);
+
+        return new Response('Data stored successfully!');
+    }
+}
