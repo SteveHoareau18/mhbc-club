@@ -66,7 +66,7 @@ WORKDIR /var/www/html/mhbc
 RUN composer install
 
 # Clean up Composer
-RUN rm -f /usr/local/bin/composer
+#RUN rm -f /usr/local/bin/composer
 
 # Set permissions
 RUN chown -R root:apache /var/www/html/mhbc

@@ -6,14 +6,13 @@ on:
     branches:
       - 'main'
     paths:
-      - 'trax.conf'
       - 'Dockerfile'
       - '.github/workflows/build-image-on-commit.yaml'
 
 
 jobs:
   build-push:
-    name: Build Trax/SWD
+    name: Build App
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -38,10 +37,3 @@ jobs:
           tags: user/app:latest
           build-args: |
             SWD_GITHUB_TOKEN=${{ secrets.TOKEN_FOR_TRAX_CLONE }}
-
-#      - name: Scan for vulnerabilities
-#        id: scan
-#        uses: crazy-max/ghaction-container-scan@v2
-#        with:
-#          image: user/app:latest
-#          annotations: true

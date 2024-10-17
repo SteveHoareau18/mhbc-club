@@ -1,15 +1,58 @@
 
 services:
 ###> doctrine/doctrine-bundle ###
+  dockerproxy:
+    image: tecnativa/docker-socket-proxy:latest
+    container_name: dockerproxy
+    environment:
+      CONTAINERS: 1
+      NETWORKS: 1
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - socket_docker
+  traefik:
+    image: traefik:latest
+    restart: always
+    container_name: traefik
+    depends_on:
+      - dockerproxy
+    ports:
+      - 80:80
+      - 443:443
+    networks:
+      - traefik-public
+      - net-mhbc
+      - socket_docker
+    volumes:
+      - "${LETSENCRYPT_DATA_DIR}:/letsencrypt/"
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+    command:
+      - "--log.level=DEBUG"
+      - "--accessLog.bufferingSize=100"
+      - "--global.sendAnonymousUsage=false"
+      - "--providers.docker=true"
+      - "--providers.docker.network=prod-mhbc"
+      - "--providers.docker.exposedbydefault=false"
+      - "--providers.docker.endpoint=tcp://dockerproxy:2375"
+      - "--providers.docker.watch=true"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
+      - "--certificatesResolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
+      - "--certificatesResolvers.letsencrypt.acme.email=${TRAEFIK_CERTIFICATESRESOLVERS_LETSENCRYPT_ACME_EMAIL}"
+      - "--certificatesResolvers.letsencrypt.acme.httpChallenge.entrypoint=web"
   mhbc-front:
     container_name: mhbc-front
     image: "local/mhbc-front:latest"
     build:
       dockerfile: Dockerfile
     ports:
-      - "80:80"
+      - "8080:80"
     depends_on:
       - database
+      - traefik
     environment:
       APP_KEY: 'base64:VDjFZGfLFfJHSENXBNdOF8Lv1xrIY3tCCZis0lIN0h0='
       APP_NAME: "MHBC"
@@ -21,7 +64,24 @@ services:
       APP_ENV: "local"
       APP_DEBUG: "true"
       APP_SECURE: "false"
-
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.mh-web.rule=Host(`${APP_HOSTNAME}`)"
+      - "traefik.http.routers.app-web.entrypoints=web"
+      - "traefik.http.routers.app-web.middlewares=appredirect"
+      - "traefik.http.routers.app-websecured.rule=Host(`${APP_HOSTNAME}`)"
+      - "traefik.http.routers.app-websecured.entrypoints=websecure"
+      - "traefik.http.routers.app-websecured.tls=true"
+      - "traefik.http.middlewares.appredirect.redirectscheme.scheme=https"
+      - "traefik.http.routers.app-web.tls.certresolver=${CERT_RESOLVER}"
+      - "traefik.http.services.app-web.loadbalancer.server.port=80"
+    networks:
+      net-mhbc:
+        aliases:
+          - app-status
+    dns:
+      - 1.1.1.1
+      - 1.0.0.1
   database:
     image: postgres:${POSTGRES_VERSION:-16}-alpine
     environment:
@@ -39,6 +99,11 @@ services:
       # You may use a bind-mounted host directory instead, so that it is harder to accidentally remove the volume and lose all your data!
       # - ./docker/db/data:/var/lib/postgresql/data:rw
 ###< doctrine/doctrine-bundle ###
+networks:
+  net-mhbc:
+  socket_docker:
+  traefik-public:
+    external: true
 
 volumes:
 ###> doctrine/doctrine-bundle ###
