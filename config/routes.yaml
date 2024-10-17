@@ -3,3 +3,23 @@ controllers:
         path: ../src/Controller/
         namespace: App\Controller
     type: attribute
+
+home:
+    path: /
+    controller: App\Controller\DefaultController::index
+
+about:
+    path: /about
+    controller: App\Controller\AboutController::index
+
+contact:
+    path: /contact
+    controller: App\Controller\ContactController::index
+
+login:
+    path: /login
+    controller: App\Controller\SecurityController::login
+
+register:
+    path: /register
+    controller: App\Controller\SecurityController::register

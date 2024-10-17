@@ -68,6 +68,10 @@ RUN composer install
 RUN composer require --dev symfony/maker-bundle
 RUN chmod +x bin/console
 RUN chmod -R 775 var/
+
+RUN apk add --update nodejs npm
+RUN composer require symfony/webpack-encore-bundle
+RUN npm install
 # Clean up Composer
 #RUN rm -f /usr/local/bin/composer
 
