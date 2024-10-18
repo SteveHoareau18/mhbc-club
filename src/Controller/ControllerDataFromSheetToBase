@@ -10,8 +10,8 @@ class ControllerDataFromSheetToBase extends AbstractController
     #[Route('/store-data', name: 'app_store_data')]
     public function storeData(GoogleSheetsService $googleSheetsService, DataStorageService $dataStorageService)
     {
-        $spreadsheetId = 'YOUR_SPREADSHEET_ID';
-        $range = 'YOUR_SHEET_RANGE';
+        $spreadsheetId = 'https://ffhandball-my.sharepoint.com/:x:/g/personal/6134000_coc_ffhandball_net/EX4H7SYFvz9AnvEmTX_hi2ABC9k6iiSH3AlJLilbetdAHw?rtime=v1CUQj7v3Eg';
+        $range = 'SHEET_RANGE';
 
         $data = $googleSheetsService->getSheetData($spreadsheetId, $range);
         $dataStorageService->storeData($data);
